@@ -8,19 +8,38 @@ variable "application_name" {
   }
 }
 
-variable "create_application_password" {
-  description = "Referecen: https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/application_password"
-  type        = bool
-  default     = false
+variable "github_actions_auth_type" {
+  type        = string
+  description = "Authenticate either with client secret or oidc provider."
+  default     = "oidc"
+  validation {
+    condition     = contains(["oidc", "secret"], var.github_actions_auth_type)
+    error_message = "Must be either \"oidc\" or \"secret\"."
+  }
 }
 
-variable "federated_identities" {
-  type = map(object({
-    description = string
-    audiences   = list(string)
-    issuer      = string
-    subject     = string
-  }))
-  default     = {}
-  description = "Reference: https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/application_federated_identity_credential"
+variable "github_org" {
+  type        = string
+  description = "github.com user/org ID"
+  default     = ""
+}
+
+variable "github_repo" {
+  type        = string
+  description = "Repository name"
+  default     = ""
+  validation {
+    condition     = length(var.github_repo) > 2
+    error_message = "A repository name is required."
+  }
+}
+
+variable "github_identifier" {
+  type        = string
+  description = "Action identifier"
+  default     = "ref:refs/heads/main"
+  validation {
+    condition     = can(regex("^(ref:.+|environment:.+|pull_request|\\*)$", var.github_identifier))
+    error_message = "Invalid github action identifier."
+  }
 }

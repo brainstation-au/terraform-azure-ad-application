@@ -6,25 +6,39 @@ resource "azuread_service_principal" "this" {
   client_id = azuread_application_registration.this.client_id
 }
 
-resource "time_rotating" "application_password" {
+resource "time_rotating" "this" {
   rotation_days = 30
 }
 
 resource "azuread_application_password" "this" {
-  count          = var.create_application_password ? 1 : 0
+  count          = var.github_actions_auth_type == "secret" ? 1 : 0
   application_id = azuread_application_registration.this.id
   rotate_when_changed = {
-    rotation = time_rotating.application_password.id
+    rotation = time_rotating.this.id
   }
 }
 
-resource "azuread_application_federated_identity_credential" "github-actions-branch-main" {
-  for_each       = var.federated_identities
+resource "azuread_application_federated_identity_credential" "this" {
+  count          = var.github_actions_auth_type == "oidc" ? 0 : 1
   application_id = azuread_application_registration.this.id
-  display_name   = each.key
-  description    = each.value.description
-  audiences      = each.value.audiences
-  issuer         = each.value.issuer
-  subject        = each.value.subject
+  display_name   = "github-actions"
+  description    = "OIDC for github actions"
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "repo:${var.github_org}/${var.github_repo}:${var.github_identifier}"
 }
 
+resource "github_actions_secret" "client_secret" {
+  repository      = var.github_repo
+  secret_name     = "AZURE_CLIENT_SECRET"
+  plaintext_value = azuread_application_password.this[0].value
+  depends_on = [
+    azuread_application_password.this[0]
+  ]
+}
+
+resource "github_actions_secret" "client_id" {
+  repository      = var.github_repo
+  secret_name     = "AZURE_CLIENT_ID"
+  plaintext_value = azuread_application_registration.this.client_id
+}
