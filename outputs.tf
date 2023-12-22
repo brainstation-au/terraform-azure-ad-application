@@ -3,6 +3,11 @@ output "service_principal_id" {
   value       = azuread_service_principal.this.object_id
 }
 
+output "application_id" {
+  description = "The Client ID for the application, which is globally unique."
+  value       = azuread_application_registration.this.id
+}
+
 output "client_id" {
   description = "The Client ID for the application, which is globally unique."
   value       = azuread_application_registration.this.client_id

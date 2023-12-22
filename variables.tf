@@ -20,8 +20,12 @@ variable "github_actions_auth_type" {
 
 variable "github_org" {
   type        = string
-  description = "github.com user/org ID"
+  description = "Organisation name (login metadata)"
   default     = ""
+  validation {
+    condition     = length(var.github_org) > 2
+    error_message = "Organisation name is required."
+  }
 }
 
 variable "github_repo" {

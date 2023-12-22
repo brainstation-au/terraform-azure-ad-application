@@ -19,7 +19,7 @@ resource "azuread_application_password" "this" {
 }
 
 resource "azuread_application_federated_identity_credential" "this" {
-  count          = var.github_actions_auth_type == "oidc" ? 0 : 1
+  count          = var.github_actions_auth_type == "oidc" ? 1 : 0
   application_id = azuread_application_registration.this.id
   display_name   = "github-actions"
   description    = "OIDC for github actions"
@@ -29,12 +29,10 @@ resource "azuread_application_federated_identity_credential" "this" {
 }
 
 resource "github_actions_secret" "client_secret" {
+  count           = var.github_actions_auth_type == "secret" ? 1 : 0
   repository      = var.github_repo
   secret_name     = "AZURE_CLIENT_SECRET"
   plaintext_value = azuread_application_password.this[0].value
-  depends_on = [
-    azuread_application_password.this[0]
-  ]
 }
 
 resource "github_actions_secret" "client_id" {
