@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+echo "--- Terraform init"
+auto/terraform init -upgrade -input=false
+
+echo "+++ Terraform validate"
+./auto/terraform validate -recursive -check
