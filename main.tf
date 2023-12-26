@@ -1,7 +1,7 @@
 data "azurerm_client_config" "current" {}
 
 resource "azuread_application_registration" "this" {
-  display_name = "${var.github_org}--${var.github_repo}"
+  display_name = "${var.github_org}/${var.github_repo}"
 }
 
 resource "azuread_service_principal" "this" {
