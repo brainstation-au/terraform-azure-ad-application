@@ -1,3 +1,5 @@
+data "azurerm_client_config" "current" {}
+
 resource "azuread_application_registration" "this" {
   display_name = "${var.github_org}--${var.github_repo}"
 }
@@ -39,4 +41,10 @@ resource "github_actions_secret" "client_id" {
   repository      = var.github_repo
   secret_name     = "AZURE_CLIENT_ID"
   plaintext_value = azuread_application_registration.this.client_id
+}
+
+resource "github_actions_secret" "tenant_id" {
+  repository      = var.github_repo
+  secret_name     = "AZURE_TENANT_ID"
+  plaintext_value = data.azurerm_client_config.current.tenant_id
 }
