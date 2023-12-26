@@ -1,5 +1,5 @@
 resource "azuread_application_registration" "this" {
-  display_name = var.application_name
+  display_name = "${var.github_org}--${var.github_repo}"
 }
 
 resource "azuread_service_principal" "this" {
