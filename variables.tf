@@ -1,3 +1,8 @@
+variable "subscription_id" {
+  type        = string
+  description = "Azure Subscription ID."
+}
+
 variable "github_actions_auth_type" {
   type        = string
   description = "Authenticate either with client secret or oidc provider."

@@ -52,3 +52,9 @@ resource "github_actions_secret" "tenant_id" {
   secret_name     = "AZURE_TENANT_ID"
   plaintext_value = data.azurerm_client_config.current.tenant_id
 }
+
+resource "github_actions_variable" "subscription_id" {
+  repository    = var.github_repo
+  variable_name = "AZURE_SUBSCRIPTION_ID"
+  value         = var.subscription_id
+}
