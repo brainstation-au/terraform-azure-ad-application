@@ -58,3 +58,15 @@ resource "github_actions_variable" "subscription_id" {
   variable_name = "AZURE_SUBSCRIPTION_ID"
   value         = var.subscription_id
 }
+
+resource "github_actions_variable" "client_id" {
+  repository    = var.github_repo
+  variable_name = "AZURE_CLIENT_ID"
+  value         = azuread_application_registration.this.client_id
+}
+
+resource "github_actions_variable" "tenant_id" {
+  repository    = var.github_repo
+  variable_name = "AZURE_TENANT_ID"
+  value         = data.azurerm_client_config.current.tenant_id
+}
